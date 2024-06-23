@@ -160,19 +160,26 @@ document.addEventListener('DOMContentLoaded', function() {
         canvas.toBlob(function(blob) {
             const imageUrl = URL.createObjectURL(blob);
 
-            // Use navigator.share if available
+            // Check if navigator.share is available
             if (navigator.share) {
                 navigator.share({
                     title: 'Quiz Results',
                     text: `My quiz score is ${totalScore}!`,
-                    url: imageUrl,
+                    url: imageUrl
                 }).then(() => {
                     console.log('Shared successfully');
                 }).catch((error) => {
                     console.error('Error sharing:', error);
                 });
             } else {
-                alert('Sharing not supported on this browser. You can manually share the quiz results image.');
+                // Fallback for browsers that do not support navigator.share
+                const dummyLink = document.createElement('a');
+                dummyLink.href = imageUrl;
+                dummyLink.setAttribute('download', 'quiz-results.png');
+                dummyLink.style.display = 'none';
+                document.body.appendChild(dummyLink);
+                dummyLink.click();
+                document.body.removeChild(dummyLink);
             }
         });
     });
@@ -225,3 +232,4 @@ document.addEventListener('DOMContentLoaded', function() {
 
     displayAnswers();
 });
+
